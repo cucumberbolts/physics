@@ -6,44 +6,50 @@
   "output": "CMakeFiles/physics.dir/main.c.o"
 },
 {
+  "directory": "/home/julian/Workspace/physics/build",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/external/glfw/include  -o CMakeFiles/physics.dir/src/bouncing_ball.c.o -c /home/julian/Workspace/physics/src/bouncing_ball.c",
+  "file": "/home/julian/Workspace/physics/src/bouncing_ball.c",
+  "output": "CMakeFiles/physics.dir/src/bouncing_ball.c.o"
+},
+{
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/raudio.c.o -c /home/julian/Workspace/physics/lib/raylib/src/raudio.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/raudio.c.o -c /home/julian/Workspace/physics/lib/raylib/src/raudio.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/raudio.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/raudio.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rcore.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rcore.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rcore.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rcore.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/rcore.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/rcore.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rmodels.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rmodels.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rmodels.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rmodels.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/rmodels.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/rmodels.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rshapes.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rshapes.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rshapes.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rshapes.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/rshapes.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/rshapes.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rtext.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rtext.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rtext.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rtext.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/rtext.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/rtext.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rtextures.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rtextures.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/rtextures.c.o -c /home/julian/Workspace/physics/lib/raylib/src/rtextures.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/rtextures.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/rtextures.c.o"
 },
 {
   "directory": "/home/julian/Workspace/physics/build/lib/raylib/raylib",
-  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/home/julian/Workspace/physics/lib/raylib/src/OPENGL_INCLUDE_DIR-NOTFOUND -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/utils.c.o -c /home/julian/Workspace/physics/lib/raylib/src/utils.c",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -I/home/julian/Workspace/physics/lib/raylib/src -I/usr/include/GL -isystem /home/julian/Workspace/physics/lib/raylib/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -std=gnu99 -o CMakeFiles/raylib.dir/utils.c.o -c /home/julian/Workspace/physics/lib/raylib/src/utils.c",
   "file": "/home/julian/Workspace/physics/lib/raylib/src/utils.c",
   "output": "lib/raylib/raylib/CMakeFiles/raylib.dir/utils.c.o"
 },

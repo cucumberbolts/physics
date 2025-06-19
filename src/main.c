@@ -1,44 +1,40 @@
-#include "raylib.h"
-#include "raymath.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <raylib.h>
 
-const Vector2 CONST_g = (Vector2){ 0.0f, 2.0f };
+#include "simulations.h"
 
 typedef struct {
-    Vector2 pos; // position
-    Vector2 vel; // velocity
-} Obj;
+    void (*init)(void);
+    void (*update)(float);
+    void (*render)(void);
+    const char* name;
+} Simulation;
 
-Obj ball;
-
-void init() {
-    ball = (Obj){ 0 };
-    ball.pos = (Vector2){ 0.0f, 0.0f };
+#define SIMULATION(FUNC, NAME) (Simulation){\
+    .init   = FUNC##_init,\
+    .update = FUNC##_update,\
+    .render = FUNC##_render,\
+    .name = #NAME\
 }
 
-void update() {
-    ball.vel = Vector2Add(ball.vel, CONST_g);
-    ball.pos = Vector2Add(ball.pos, ball.vel);
+Simulation simulations[] = {
+    SIMULATION(bouncing_ball, "Bouncing Ball"),
+    SIMULATION(simple_pendulum, "Simple Pendulum"),
+};
 
-    if (ball.pos.y >= 450) {
-        ball.vel.y = -ball.vel.y;
-    }
-}
+static size_t current_sim = 0;
+static int display_fps = true;
 
-void render() {
-    // Draw the circle
-    DrawCircleV(ball.pos, 20, BLUE);
-}
-
-int main()
-{
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+int main() {
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
+    const float fps = 120;
 
     InitWindow(screenWidth, screenHeight, "Physics");
 
-    SetTargetFPS(60);
-
-    init();
+    // Initialize the current simulation
+    simulations[current_sim].init();
 
     Camera2D cam = { 
         .target = (Vector2){ 0.0f, 0.0f },
@@ -46,16 +42,41 @@ int main()
         .zoom = 0.5f,
     };
 
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
-        update();
+    float last_time = GetTime();
+    float last_frame = 0.0f;
+    float period = 1.0f/fps;
 
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        BeginMode2D(cam);
-        render();
-        EndMode2D();
-        EndDrawing();
+    while (!WindowShouldClose()) {   // Detect window close button or ESC key
+        float time = GetTime();
+        float dt = time - last_time;
+        last_time = time;
+        last_frame += dt;
+
+        // Update the current simulation
+        simulations[current_sim].update(dt);
+
+        if (last_frame > period) {
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+
+            // Display FPS
+            if (IsKeyPressed(KEY_F))
+                display_fps = !display_fps;
+            if (display_fps) {
+                char fps_display[16];
+                sprintf(fps_display, "FPS: %f", 1.0f/last_frame);
+                DrawText(fps_display, 10, 10, 40, BLACK);
+            }
+
+            // Render the current simulation
+            BeginMode2D(cam);
+            simulations[current_sim].render();
+            EndMode2D();
+
+            EndDrawing();
+
+            last_frame = 0.0f;
+        }
     }
 
     CloseWindow();

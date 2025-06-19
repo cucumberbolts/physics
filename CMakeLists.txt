@@ -4,6 +4,10 @@ project(physics)
 
 set(SOURCES
     "src/main.c"
+    "src/simulations.h"
+
+    "src/simple_pendulum.c"
+    "src/bouncing_ball.c"
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
