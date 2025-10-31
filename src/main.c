@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <raylib.h>
 
 #include "simulations.h"
@@ -21,10 +22,11 @@ typedef struct {
 Simulation simulations[] = {
     SIMULATION(bouncing_ball, "Bouncing Ball"),
     SIMULATION(simple_pendulum, "Simple Pendulum"),
+    SIMULATION(double_pendulum, "Double Pendulum"),
 };
 
-static size_t current_sim = 0;
-static int display_fps = true;
+static size_t current_sim = 2;
+static int display_fps = false;
 
 int main() {
     const int screenWidth = 1280;
@@ -39,14 +41,15 @@ int main() {
     Camera2D cam = { 
         .target = (Vector2){ 0.0f, 0.0f },
         .offset = (Vector2){ (float)screenWidth*0.5f, (float)screenHeight*0.5f },
-        .zoom = 0.5f,
+        .zoom = 1.0f,
     };
 
     float last_time = GetTime();
     float last_frame = 0.0f;
-    float period = 1.0f/fps;
+    const float period = 1.0f/fps;
 
     while (!WindowShouldClose()) {   // Detect window close button or ESC key
+        // Update delta time
         float time = GetTime();
         float dt = time - last_time;
         last_time = time;
@@ -64,7 +67,7 @@ int main() {
                 display_fps = !display_fps;
             if (display_fps) {
                 char fps_display[16];
-                sprintf(fps_display, "FPS: %f", 1.0f/last_frame);
+                sprintf(fps_display, "FPS: %d", (int)roundf(1.0f/last_frame));
                 DrawText(fps_display, 10, 10, 40, BLACK);
             }
 

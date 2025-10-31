@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
-const Vector2 CONST_g = (Vector2){ 0.0f, 32000.0f };
+static const Vector2 CONST_g = (Vector2){ 0.0f, 32000.0f };
 
 typedef struct {
     Vector2 pos; // position, m

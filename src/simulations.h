@@ -8,5 +8,6 @@
 
 DECLARE_SIMULATION(bouncing_ball);
 DECLARE_SIMULATION(simple_pendulum);
+DECLARE_SIMULATION(double_pendulum);
 
 #endif
