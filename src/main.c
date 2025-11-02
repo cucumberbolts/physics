@@ -31,7 +31,7 @@ static int display_fps = false;
 int main() {
     const int screenWidth = 1280;
     const int screenHeight = 720;
-    const float fps = 120;
+    const float fps = 60.f;
 
     InitWindow(screenWidth, screenHeight, "Physics");
 
@@ -48,6 +48,10 @@ int main() {
     float last_frame = 0.0f;
     const float period = 1.0f/fps;
 
+    SetTargetFPS(fps);
+
+    bool debug_mode = false;
+
     while (!WindowShouldClose()) {   // Detect window close button or ESC key
         // Update delta time
         float time = GetTime();
@@ -56,30 +60,38 @@ int main() {
         last_frame += dt;
 
         // Update the current simulation
-        simulations[current_sim].update(dt);
+        if (!debug_mode)
+            simulations[current_sim].update(dt);
+        else if (debug_mode && IsKeyPressed(KEY_RIGHT))
+            simulations[current_sim].update(period);
 
-        if (last_frame > period) {
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
+        if (IsKeyPressed(KEY_SPACE))
+            debug_mode = !debug_mode;
 
-            // Display FPS
-            if (IsKeyPressed(KEY_F))
-                display_fps = !display_fps;
-            if (display_fps) {
-                char fps_display[16];
-                sprintf(fps_display, "FPS: %d", (int)roundf(1.0f/last_frame));
-                DrawText(fps_display, 10, 10, 40, BLACK);
-            }
+        // if (last_frame > period) {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
-            // Render the current simulation
-            BeginMode2D(cam);
-            simulations[current_sim].render();
-            EndMode2D();
-
-            EndDrawing();
-
-            last_frame = 0.0f;
+#if 0
+        // Display FPS
+        if (IsKeyPressed(KEY_F))
+            display_fps = !display_fps;
+        if (display_fps) {
+            char fps_display[16];
+            sprintf(fps_display, "FPS: %d", (int)roundf(1.0f/last_frame));
+            DrawText(fps_display, 10, 10, 40, BLACK);
         }
+#endif
+
+        // Render the current simulation
+        BeginMode2D(cam);
+        simulations[current_sim].render();
+        EndMode2D();
+
+        EndDrawing();
+
+        last_frame = 0.0f;
+        // }
     }
 
     CloseWindow();
