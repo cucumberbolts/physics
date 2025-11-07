@@ -3,11 +3,11 @@
 #include <raymath.h>
 
 typedef struct {
-    Vector2 pos;    // Position of pendulum's axis of rotation
-    float length;   // Length of pendulum string
-    float theta;    // Angular displacement of pendulum in radians with respect to the vertical
-    float theta_d;  // Angular velocity of pendulum
-    float theta_dd; // Angular acceleration of pendulum
+    Vector2 pos; // Position of pendulum's axis of rotation
+    float len;   // Length of pendulum string
+    float t;     // Angular displacement of pendulum in radians with respect to the vertical
+    float td;    // Angular velocity of pendulum
+    float tdd;   // Angular acceleration of pendulum
 } Pendulum;
 
 static const float CONST_g = 3000.0f;
@@ -19,31 +19,31 @@ static float period = 0.0f; // The last time measurement for the period
 static float start_pos_err = 0.110f;   // Error for this measurement
 static bool in_error = false;
 
-static float starting_angle = 1.5f;
-static bool dampen = false;
+static float starting_angle = 3.1f;
+static bool dampen = true;
 
 void simple_pendulum_init() {
     pen = (Pendulum){ 
         .pos = (Vector2){ 0.0f, -100.0f },
-        .length = 300.0f,
-        .theta = starting_angle,
+        .len = 300.0f,
+        .t = starting_angle,
     };
 }
 
 void simple_pendulum_update(float dt) {
-    float dampening = dampen ? pen.theta_d * 0.2f : 0;
-    pen.theta_dd = -CONST_g/pen.length * sinf(pen.theta) - dampening;
+    float dampening = dampen ? pen.td * 0.2f : 0;
+    pen.tdd = -CONST_g/pen.len * sinf(pen.t) - dampening;
 
-    // pen.theta_dd = -CONST_g/pen.length * sinf(pen.theta);
-    pen.theta_d += pen.theta_dd * dt;
-    pen.theta += pen.theta_d * dt;
+    // pen.tdd = -CONST_g/pen.len * sinf(pen.t);
+    pen.td += dt * pen.tdd;
+    pen.t  += dt * pen.td;
 
     // Start timer to measure the period
-    if (pen.theta > starting_angle - start_pos_err && in_error == false) {
+    if (pen.t > starting_angle - start_pos_err && in_error == false) {
         period = timer;
         timer = 0.0f;
         in_error = true;
-    } else if (pen.theta < starting_angle - start_pos_err && in_error == true) {
+    } else if (pen.t < starting_angle - start_pos_err && in_error == true) {
         timer += dt;
         in_error = false;
     } else {
@@ -53,14 +53,14 @@ void simple_pendulum_update(float dt) {
 
 void simple_pendulum_render() {
     Vector2 bob_pos = { 
-        .x = pen.pos.x + pen.length * sinf(pen.theta),
-        .y = pen.pos.y + pen.length * cosf(pen.theta),
+        .x = pen.pos.x + pen.len * sinf(pen.t),
+        .y = pen.pos.y + pen.len * cosf(pen.t),
     };
 
     DrawLineEx(pen.pos, bob_pos, 10, BLACK);
     DrawCircleV(bob_pos, 20, BLUE);
 
     char disp[128];
-    sprintf(disp, "Theta (radians): %f\nTimer (seconds): %f\nPeriod (seconds): %f\n", pen.theta, timer, period);
+    sprintf(disp, "Theta (radians): %.3f\nTimer (seconds): %.3f\nPeriod (seconds): %.3f\n", pen.t, timer, period);
     DrawText(disp, 200, -320, 30, BLACK);
 }

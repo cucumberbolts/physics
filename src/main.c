@@ -31,7 +31,7 @@ static int display_fps = false;
 int main() {
     const int screenWidth = 1280;
     const int screenHeight = 720;
-    const float fps = 60.f;
+    const float fps = 120.f;
 
     InitWindow(screenWidth, screenHeight, "Physics");
 
