@@ -6,7 +6,7 @@ typedef struct {
     Vector2 pos; // Position of pendulum's axis of rotation
     float t;     // Angular displacement of pendulum in radians with respect to the vertical
     float td;    // Angular velocity of pendulum
-    float tdd;   // Angular acceleration of pendulum
+    // float tdd;   // Angular acceleration of pendulum
 } Pendulum;
 
 typedef struct {
@@ -19,10 +19,12 @@ static const float CONST_g = 3000.0f;
 DoublePendulum pen1;
 DoublePendulum pen2;
 
-DoublePendulum new_double_pendulum(Vector2 pos, float len, float t1, float td1, float t2, float td2) {
-    // Don't need to initialize theta double dot
-    // since it gets updated first in the update loop
+typedef struct {
+    float kinetic;
+    float potential;
+} Energy;
 
+DoublePendulum dp_new(Vector2 pos, float len, float t1, float td1, float t2, float td2) {
     Pendulum p1 = {
         .pos = pos,
         .t   = t1,
@@ -41,7 +43,23 @@ DoublePendulum new_double_pendulum(Vector2 pos, float len, float t1, float td1, 
     return (DoublePendulum){ p1, p2, len };
 }
 
-void update_double_pendulum(DoublePendulum* pen, float dt) {
+Energy dp_energy(DoublePendulum* const pen) {
+    const float m = 1.0f; // Placeholder for mass (can be ignored)
+    
+    float cos_diff = cosf(pen->p1.t - pen->p2.t);
+    float kinetic = pen->p2.td * pen->p2.td
+           + 4.0f * pen->p1.td * pen->p1.td
+           + 3.0f * pen->p1.td * pen->p2.td * cos_diff;
+
+    kinetic *= m * pen->len * pen->len / 6.0f;
+
+    float dist = -0.5f * pen->len * (3.0f * cosf(pen->p1.t) + cosf(pen->p2.t));
+    float potential = CONST_g * (2 * pen->len + dist);
+
+    return (Energy){ kinetic, potential };
+}
+
+Vector2 dp_diff_eq(DoublePendulum* const pen) {
     // Differential equations derived from the Euler-Lagrange equation
     // https://en.wikipedia.org/wiki/Double_pendulum#Lagrangian
 
@@ -57,17 +75,59 @@ void update_double_pendulum(DoublePendulum* pen, float dt) {
 
     float denom = 1.0f / (A * D - B * B);
 
-    pen->p1.tdd = (C * D - B * E) * denom;
-    pen->p2.tdd = (A * E - B * C) * denom;
+    float p1_tdd = (C * D - B * E) * denom;
+    float p2_tdd = (A * E - B * C) * denom;
 
-    pen->p1.td += dt * pen->p1.tdd;
-    pen->p1.t  += dt * pen->p1.td;
-
-    pen->p2.td += dt * pen->p2.tdd;
-    pen->p2.t  += dt * pen->p2.td;
+    return (Vector2){ p1_tdd, p2_tdd };
 }
 
-void render_double_pendulum(DoublePendulum* const pen, Color colour) {
+void dp_move(DoublePendulum* pen, Vector2 k, float dt) {
+    pen->p1.t  += dt * pen->p1.td;
+    pen->p2.t  += dt * pen->p2.td;
+    pen->p1.td += dt * k.x;
+    pen->p2.td += dt * k.y;
+}
+
+void dp_euler(DoublePendulum* pen, float dt) {
+    Vector2 k = dp_diff_eq(pen);
+    dp_move(pen, k, dt);
+}
+
+void dp_rk2(DoublePendulum* pen, float dt) {
+    Vector2 k1 = dp_diff_eq(pen);
+
+    DoublePendulum pen1 = *pen;
+    dp_move(&pen1, k1, dt);
+    Vector2 k2 = dp_diff_eq(&pen1);
+
+    pen->p1.t  += 0.5 * dt * (pen->p1.td + pen1.p1.td);
+    pen->p2.t  += 0.5 * dt * (pen->p2.td + pen1.p2.td);
+    pen->p1.td += 0.5 * dt * (k1.x + k2.x);
+    pen->p2.td += 0.5 * dt * (k1.y + k2.y);
+}
+
+void dp_rk4(DoublePendulum* pen, float dt) {
+    Vector2 k1 = dp_diff_eq(pen);
+
+    DoublePendulum pen1 = *pen;
+    dp_move(&pen1, k1, 0.5 * dt);
+    Vector2 k2 = dp_diff_eq(&pen1);
+
+    DoublePendulum pen2 = *pen;
+    dp_move(&pen2, k2, 0.5 * dt);
+    Vector2 k3 = dp_diff_eq(&pen2);
+
+    DoublePendulum pen3 = *pen;
+    dp_move(&pen3, k3, dt);
+    Vector2 k4 = dp_diff_eq(&pen3);
+
+    pen->p1.t  += dt / 6.0f * (pen->p1.td + 2.0f * pen1.p1.td + 2.0f * pen2.p1.td + pen3.p1.td);
+    pen->p2.t  += dt / 6.0f * (pen->p2.td + 2.0f * pen1.p2.td + 2.0f * pen2.p2.td + pen3.p2.td);
+    pen->p1.td += dt / 6.0f * (k1.x + 2.0f * k2.x + 2.0f * k3.x + k4.x);
+    pen->p2.td += dt / 6.0f * (k1.y + 2.0f * k2.y + 2.0f * k3.y + k4.y);
+}
+
+void dp_render(DoublePendulum* const pen, Color colour) {
     Vector2 bob1_pos = {
         .x = pen->p1.pos.x + pen->len * sinf(pen->p1.t),
         .y = pen->p1.pos.y + pen->len * cosf(pen->p1.t),
@@ -85,16 +145,33 @@ void render_double_pendulum(DoublePendulum* const pen, Color colour) {
 
 void double_pendulum_init() {
     Vector2 pos = { 0.0f, -100.f };
-    pen1 = new_double_pendulum(pos, 200.f, 2.0f, 0.0f, 2.19f, 0.0f);
-    pen2 = new_double_pendulum(pos, 200.f, 2.0f, 0.0f, 2.2f, 0.0f);
+    pen1 = dp_new(pos, 200.f, 2.0f, 0.0f, 2.2f, 0.0f);
+    pen2 = dp_new(pos, 200.f, 2.0f, 0.0f, 2.2f, 0.0f);
 }
 
 void double_pendulum_update(float dt) {
-    update_double_pendulum(&pen1, dt);
-    update_double_pendulum(&pen2, dt);
+    dp_rk4(&pen1, dt);
+    // dp_rk4(&pen2, dt);
+    dp_euler(&pen2, dt);
 }
 
 void double_pendulum_render() {
-    render_double_pendulum(&pen1, RED);
-    render_double_pendulum(&pen2, ORANGE);
+    // Render the pendulums
+    dp_render(&pen1, RED);
+    dp_render(&pen2, ORANGE);
+
+    // Display the pendulums' energies
+    Energy e1 = dp_energy(&pen1);
+    Energy e2 = dp_energy(&pen2);
+
+    float e1_total = e1.kinetic + e1.potential;
+    float e2_total = e2.kinetic + e2.potential;
+
+    // Scale down since CONST_g is massive
+    e1_total *= 0.001f;
+    e2_total *= 0.001f;
+
+    char disp[128];
+    sprintf(disp, "Pendulum 1 energy: %.2f\nPendulum 2 energy: %.2f\n", e1_total, e2_total);
+    DrawText(disp, 200, -320, 30, BLACK);
 }
