@@ -150,7 +150,7 @@ void double_pendulum_init() {
 }
 
 void double_pendulum_update(float dt) {
-    dp_rk4(&pen1, dt);
+    dp_rk2(&pen1, dt);
     // dp_rk4(&pen2, dt);
     dp_euler(&pen2, dt);
 }
