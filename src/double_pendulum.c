@@ -1,6 +1,9 @@
-#include <stdio.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
+#include <stdint.h>
+
+#include "scenes.h"
 
 typedef struct {
     Vector2 pos; // Position of pendulum's axis of rotation
@@ -23,6 +26,11 @@ typedef struct {
     float kinetic;
     float potential;
 } Energy;
+
+// Button to return to title
+static Rectangle back_btn = { 0 };
+static bool back_btn_hovered;
+static bool back_btn_pressed;
 
 DoublePendulum dp_new(Vector2 pos, float len, float t1, float td1, float t2, float td2) {
     Pendulum p1 = {
@@ -144,15 +152,30 @@ void dp_render(DoublePendulum* const pen, Color colour) {
 }
 
 void double_pendulum_init() {
-    Vector2 pos = { 0.0f, -100.f };
+    Vector2 pos = { GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f };
     pen1 = dp_new(pos, 200.f, 2.0f, 0.0f, 2.2f, 0.0f);
     pen2 = dp_new(pos, 200.f, 2.0f, 0.0f, 2.2f, 0.0f);
+
+    SetWindowTitle("Double Pendulum");
+
+    back_btn = (Rectangle) {
+        .x = 50,
+        .y = 50,
+        .width = 150,
+        .height = 60,
+    };
+    back_btn_hovered = false;
+    back_btn_pressed = false;
 }
 
 void double_pendulum_update(float dt) {
     dp_rk2(&pen1, dt);
     // dp_rk4(&pen2, dt);
     dp_euler(&pen2, dt);
+
+    Vector2 mouse_pos = GetMousePosition();
+    back_btn_hovered = CheckCollisionPointRec(mouse_pos, back_btn);
+    back_btn_pressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && back_btn_hovered;
 }
 
 void double_pendulum_render() {
@@ -172,6 +195,23 @@ void double_pendulum_render() {
     e2_total *= 0.001f;
 
     char disp[128];
-    sprintf(disp, "Pendulum 1 energy: %.2f\nPendulum 2 energy: %.2f\n", e1_total, e2_total);
-    DrawText(disp, 200, -320, 30, BLACK);
+    sprintf(disp, "Red pendulum energy: %.2f\nOrange pendulum energy: %.2f\n", e1_total, e2_total);
+    DrawText(disp, GetScreenWidth() - 520, 30, 30, BLACK);
+
+    // Draw the back button
+    if (back_btn_hovered) {
+        DrawRectangleRec(back_btn, BLUE);
+        DrawRectangleLinesEx(back_btn, 5.0f, DARKBLUE);
+        DrawText("Back", back_btn.x + 39, back_btn.y + 15, 30, DARKBLUE);
+    } else {
+        DrawRectangleRec(back_btn, LIGHTGRAY);
+        DrawRectangleLinesEx(back_btn, 5.0f, DARKGRAY);
+        DrawText("Back", back_btn.x + 39, back_btn.y + 15, 30, DARKGRAY);
+    }
+}
+
+void double_pendulum_unload() {}
+
+SceneNum double_pendulum_transition() {
+    return back_btn_pressed ? TITLE : DOUBLE_PENDULUM;
 }
