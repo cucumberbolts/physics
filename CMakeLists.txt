@@ -4,8 +4,9 @@ project(physics)
 
 set(SOURCES
     "src/main.c"
-    "src/simulations.h"
+    "src/scenes.h"
 
+    "src/title.c"
     "src/simple_pendulum.c"
     "src/double_pendulum.c"
     "src/bouncing_ball.c"
