@@ -3,7 +3,7 @@
 # Exit on error
 set -xe
 
-emcmake cmake -B webbuild
+emcmake cmake -B webbuild -DPLATFORM=Web
 cmake --build webbuild
 cd webbuild
 mv physics.html index.html

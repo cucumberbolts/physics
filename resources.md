@@ -1,5 +1,6 @@
 ## Equations for double pendulum
 https://en.wikipedia.org/wiki/Double_pendulum#Lagrangian
+https://myphysicslab.com/pendulum/pendulum-en.html
 
 ## Runge Kutta
 https://youtu.be/dShtlMl69kY

@@ -44,6 +44,10 @@ void title_init() {
 }
 
 void title_update(float dt) {
+    if (IsWindowResized()) {
+        resize_menu(menu_width, menu_height);
+    }
+
     Vector2 mouse_pos = GetMousePosition();
 
     for (int i = 0; i < DISP_SCENE_CNT; ++i) {

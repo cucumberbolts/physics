@@ -30,7 +30,9 @@ int main() {
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Pendulum Simulations");
+    SetWindowMinSize(screenWidth, screenHeight);
 
     AppData d = {
         .fps = 60.0f,
