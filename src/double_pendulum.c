@@ -129,7 +129,7 @@ void dp_render(DoublePendulum* const pen, Color colour) {
     DrawLineEx(end1,     end2, 20, colour);
 }
 
-#define EXPORT_CSV 0
+#define EXPORT_CSV 1
 
 void double_pendulum_init() {
     Vector2 pos = { GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f };
