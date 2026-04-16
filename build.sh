@@ -88,15 +88,15 @@ elif [[ $platform == "web" ]]; then
     html_dir="$build_dir/physics.html"
 
     if [[ $dist ]]; then
-	cd $build_dir
-	mv physics.html index.html
-	zip physics.zip index.html physics.wasm physics.js
-	cd ..
+        cd $build_dir
+        mv physics.html index.html
+        zip physics.zip index.html physics.wasm physics.js
+        cd ..
 
-	html_dir="$build_dir/index.html"
+        html_dir="$build_dir/index.html"
     fi
 
     if [[ $run ]]; then
-	emrun $html_dir
+        emrun $html_dir
     fi
 fi

@@ -14,12 +14,11 @@ add_custom_target(
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-set(RAYLIB_VERSION 5.5)
-
 FetchContent_Declare(
     raylib
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
+    GIT_REPOSITORY https://github.com/raysan5/raylib/
+    GIT_TAG 6ef36c0a1733a04ed38990e7094a5e710ce1164b
     FIND_PACKAGE_ARGS
 )
 
