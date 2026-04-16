@@ -25,6 +25,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(raylib)
 
+# Link statically when cross-compiling for mingw
+# to avoid errors trying to find the correct dlls
+if (MINGW)
+    message("Platform Mingw")
+    add_link_options(--static)
+endif()
+
 set(SOURCES
     "src/main.c"
     "src/scenes.h"
