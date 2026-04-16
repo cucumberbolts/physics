@@ -6,16 +6,34 @@
 #include "scenes.h"
 
 typedef struct {
-    // .x -> theta 1
-    // .y -> theta 2
-    // .z -> theta-dot 1
-    // .w -> theta-dot 2
-    Vector4 state;
-    float len;
+    double t1, t2, w1, w2;
+} State;
+
+State state_add(State a, State b) {
+    return (State){
+        a.t1 + b.t1,
+        a.t2 + b.t2,
+        a.w1 + b.w1,
+        a.w2 + b.w2,
+    };
+}
+
+State state_scale(State a, double b) {
+    return (State){
+        a.t1 * b,
+        a.t2 * b,
+        a.w1 * b,
+        a.w2 * b,
+    };
+}
+
+typedef struct {
+    State state;
+    double len;
     Vector2 pos;
 } DoublePendulum;
 
-static const float CONST_g = 3000.0f;
+static const double CONST_g = 3000.0;
 
 static DoublePendulum pen1;
 static DoublePendulum pen2;
@@ -33,10 +51,10 @@ static bool back_btn_pressed;
 Energy dp_energy(DoublePendulum* const pen) {
     const float m = 1.0f; // Placeholder for mass (can be ignored)
 
-    const float t1 = pen->state.x;
-    const float t2 = pen->state.y;
-    const float w1 = pen->state.z;
-    const float w2 = pen->state.w;
+    const float t1 = pen->state.t1;
+    const float t2 = pen->state.t2;
+    const float w1 = pen->state.w1;
+    const float w2 = pen->state.w2;
     
     float kinetic = w2 * w2
            + 4.0f * w1 * w1
@@ -50,78 +68,73 @@ Energy dp_energy(DoublePendulum* const pen) {
     return (Energy){ kinetic, potential };
 }
 
-Vector4 dp_ode(Vector4* const s, float len, float g) {
+State dp_ode(State* const s, double len, double g) {
     // Returns the time derivative of each element in the vector
     // Differential equations derived from the Euler-Lagrange equation
     // https://en.wikipedia.org/wiki/Double_pendulum#Lagrangian
 
-    const float t1 = s->x;
-    const float t2 = s->y;
-    const float w1 = s->z;
-    const float w2 = s->w;
+    double sin_diff = sin(s->t1 - s->t2);
 
-    float sin_diff = sinf(t1 - t2);
+    double A = (4.0 / 3.0) * len;
+    double B = 0.5 * len * cos(s->t1 - s->t2);
+    double C = -0.5 * len * s->w2 * s->w2 * sin_diff -1.5 * g * sin(s->t1);
+    double D = (1.0 / 3.0) * len;
+    double E = 0.5 * len * s->w1 * s->w1 * sin_diff -0.5 * g * sin(s->t2);
 
-    float A = (4.0f / 3.0f) * len;
-    float B = 0.5f * len * cosf(t1 - t2);
-    float C = -0.5f * len * w2 * w2 * sin_diff -1.5f * g * sinf(t1);
-    float D = (1.0f / 3.0f) * len;
-    float E = 0.5f * len * w1 * w1 * sin_diff -0.5f * g * sinf(t2);
-
-    float denom = 1.0f / (A * D - B * B);
+    double denom = 1.0 / (A * D - B * B);
 
     // Angular acceleration (theta-double-dot) for both pendulums
-    float a1 = (C * D - B * E) * denom;
-    float a2 = (A * E - B * C) * denom;
+    double a1 = (C * D - B * E) * denom;
+    double a2 = (A * E - B * C) * denom;
 
-    return (Vector4){ .x = w1, .y = w2, .z = a1, .w = a2 };
+    return (State){ .t1 = s->w1, .t2 = s->w2, .w1 = a1, .w2 = a2 };
 }
 
-Vector4 dp_euler(Vector4* s, float len, float g, float dt) {
-    Vector4 k = dp_ode(s, len, g);
-    Vector4 state = Vector4Add(*s, Vector4Scale(k, dt));
+State dp_euler(State* s, double len, double g, float dt) {
+    State k = dp_ode(s, len, g);
+    State state = state_add(*s, state_scale(k, dt));
     return state;
 }
 
-Vector4 dp_rk2(Vector4* s, float len, float g, float dt) {
-    Vector4 k1 = dp_ode(s, len, g);
+State dp_rk2(State* s, double len, double g, float dt) {
+    State k1 = dp_ode(s, len, g);
 
-    Vector4 a = Vector4Add(*s, Vector4Scale(k1, dt));
-    Vector4 k2 = dp_ode(&a, len, g);
+    State a = state_add(*s, state_scale(k1, dt));
+    State k2 = dp_ode(&a, len, g);
 
-    Vector4 ds = Vector4Scale(Vector4Add(k1, k2), dt * 0.5f);
-    return Vector4Add(*s, ds);
+    State ds = state_scale(state_add(k1, k2), dt * 0.5);
+    return state_add(*s, ds);
 }
 
-Vector4 dp_rk4(Vector4* s, float len, float g, float dt) {
-    Vector4 k1 = dp_ode(s, len, g);
+State dp_rk4(State* s, double len, double g, float dt) {
+    State k1 = dp_ode(s, len, g);
 
-    Vector4 a = Vector4Add(*s, Vector4Scale(k1, 0.5f * dt));
-    Vector4 k2 = dp_ode(&a, len, g);
+    State a = state_add(*s, state_scale(k1, 0.5 * dt));
+    State k2 = dp_ode(&a, len, g);
 
-    Vector4 b = Vector4Add(*s, Vector4Scale(k2, 0.5f * dt));
-    Vector4 k3 = dp_ode(&b, len, g);
+    State b = state_add(*s, state_scale(k2, 0.5 * dt));
+    State k3 = dp_ode(&b, len, g);
 
-    Vector4 c = Vector4Add(*s, Vector4Scale(k3, dt));
-    Vector4 k4 = dp_ode(&c, len, g);
+    State c = state_add(*s, state_scale(k3, dt));
+    State k4 = dp_ode(&c, len, g);
 
-    Vector4 ds = Vector4Add(
-        Vector4Scale(Vector4Add(k1, k4), dt / 6.0f),
-        Vector4Scale(Vector4Add(k2, k3), dt / 3.0f)
+    State ds = state_add(
+        state_scale(state_add(k1, k4), dt / 6.0),
+        state_scale(state_add(k2, k3), dt / 3.0)
     );
 
-    return Vector4Add(*s, ds);
+    return state_add(*s, ds);
 }
 
 void dp_render(DoublePendulum* const pen, Color colour) {
     Vector2 end1 = {
-        .x = pen->pos.x + pen->len * sinf(pen->state.x),
-        .y = pen->pos.y + pen->len * cosf(pen->state.x),
+        .x = pen->pos.x + pen->len * sin(pen->state.t1),
+        .y = pen->pos.y + pen->len * cos(pen->state.t1),
     };
 
     Vector2 end2 = {
-        .x = end1.x + pen->len * sinf(pen->state.y),
-        .y = end1.y + pen->len * cosf(pen->state.y),
+        .x = end1.x + pen->len * sin(pen->state.t2),
+        .y = end1.y + pen->len * cos(pen->state.t2),
     };
 
     // Draw the bars
@@ -129,25 +142,25 @@ void dp_render(DoublePendulum* const pen, Color colour) {
     DrawLineEx(end1,     end2, 20, colour);
 }
 
-#define EXPORT_CSV 1
+#define EXPORT_CSV 0
 
 void double_pendulum_init() {
-    Vector2 pos = { GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f };
+    Vector2 pos = { GetScreenWidth() * 0.5, GetScreenHeight() * 0.5 };
 
-    const float th1 = 2.0f;
-    const float th2 = 2.2f;
-    const float thd1 = 0.0f;
-    const float thd2 = 0.0f;
+    const double th1 = 2.0;
+    const double th2 = 2.2;
+    const double thd1 = 0.0;
+    const double thd2 = 0.0;
 
     pen1 = (DoublePendulum){
-        .state = (Vector4){ th1, th2, thd1, thd2 },
-        .len = 200.0f,
+        .state = (State){ th1, th2, thd1, thd2 },
+        .len = 200.0,
         .pos = pos,
     };
 
     pen2 = (DoublePendulum){
-        .state = (Vector4){ th1, th2, thd1, thd2 },
-        .len = 200.0f,
+        .state = (State){ th1, th2, thd1, thd2 },
+        .len = 200.0,
         .pos = pos,
     };
 
@@ -193,7 +206,7 @@ void double_pendulum_render() {
     e2_total *= 0.001f;
 
 #if EXPORT_CSV
-    printf("%f, %f, %f, %f, %f, %f, %f\n", GetTime(), e1_total, e2_total, pen1.state.x, pen1.state.y, pen1.state.z, pen1.state.w);
+    printf("%lf, %lf, %lf, %lf, %lf, %lf, %lf\n", GetTime(), e1_total, e2_total, pen1.state.t1, pen1.state.t2, pen1.state.w1, pen1.state.w2);
 #endif
 
     char disp[128];
